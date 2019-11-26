@@ -20,9 +20,7 @@ from utils import visualization_utils as vis_util
 *****************************************************************
 '''
 
-def cumulative_object_counting_x_axis(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, deviation):
-        total_passed_vehicle = 0              
-
+def cumulative_object_counting_x_axis(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, deviation):         
         # input video
         cap = cv2.VideoCapture(input_video)
 
@@ -231,202 +229,201 @@ def couting_parcel_passed_line(input_video, detection_graph, category_index, is_
         frame_counted = 0
 
         with detection_graph.as_default():
-          #with tf.device("/gpu:0"):
-              with tf.Session(graph=detection_graph) as sess:
-                # Definite input and output Tensors for detection_graph
-                image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
+          with tf.Session(graph=detection_graph) as sess:
+            # Definite input and output Tensors for detection_graph
+            image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
 
-                # Each box represents a part of the image where a particular object was detected.
-                detection_boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
+            # Each box represents a part of the image where a particular object was detected.
+            detection_boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
 
-                # Each score represent how level of confidence for each of the objects.
-                # Score is shown on the result image, together with the class label.
-                detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
-                detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
-                num_detections = detection_graph.get_tensor_by_name('num_detections:0')
+            # Each score represent how level of confidence for each of the objects.
+            # Score is shown on the result image, together with the class label.
+            detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
+            detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
+            num_detections = detection_graph.get_tensor_by_name('num_detections:0')
 
-                # for all the frames that are extracted from input video
-                while(cap.isOpened()):
-                    ret, frame = cap.read()
-                    print('Start process frame: ' + str(frame_counted) + '...')
-                    if not  ret:
-                        print("end of the video file...")
-                        break
+            # for all the frames that are extracted from input video
+            while(cap.isOpened()):
+              ret, frame = cap.read()
+              print('Start process frame: ' + str(frame_counted) + '...')
+              if not  ret:
+                  print("end of the video file...")
+                  break
 
-                    input_frame = frame
+              input_frame = frame
 
-                    # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-                    image_np_expanded = np.expand_dims(input_frame, axis=0)
+              # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
+              image_np_expanded = np.expand_dims(input_frame, axis=0)
 
-                    # Actual detection.
-                    (boxes, scores, classes, num) = sess.run(
-                        [detection_boxes, detection_scores, detection_classes, num_detections],
-                        feed_dict={image_tensor: image_np_expanded})
+              # Actual detection.
+              (boxes, scores, classes, num) = sess.run(
+                  [detection_boxes, detection_scores, detection_classes, num_detections],
+                  feed_dict={image_tensor: image_np_expanded})
 
-                    # insert information text to video frame
-                    font = cv2.FONT_HERSHEY_SIMPLEX
+              # insert information text to video frame
+              font = cv2.FONT_HERSHEY_SIMPLEX
 
-                   # Visualization of the results of a detection.
+             # Visualization of the results of a detection.
 
-                    counter, csv_line, counting_mode = vis_util.visualize_boxes_and_labels_on_image_array_y_axis(
-                                                                                                                    cap.get(1),
-                                                                                                                    input_frame,
-                                                                                                                    2,
-                                                                                                                    is_color_recognition_enabled,
-                                                                                                                    np.squeeze(boxes),
-                                                                                                                    np.squeeze(classes).astype(np.int32),
-                                                                                                                    np.squeeze(scores),
-                                                                                                                    category_index,
-                                                                                                                    y_reference=roi,
-                                                                                                                    deviation=deviation,
-                                                                                                                    use_normalized_coordinates=True,
-                                                                                                                    line_thickness=1)
-                    # when the vehicle passed over line and counted, make the color of ROI line green
-                    print("Count in frame: " + str(counter))
-                    if counter == 1:
-                        cv2.line(input_frame, (530, roi), (1010, roi), (0, 0xFF, 0), 2, 8)
-                    else:
-                        cv2.line(input_frame, (530, roi), (1010, roi), (0, 0, 0xFF), 2, 8)
+              counter, csv_line, counting_mode = vis_util.visualize_boxes_and_labels_on_image_array_y_axis(
+                                                                                                              cap.get(1),
+                                                                                                              input_frame,
+                                                                                                              2,
+                                                                                                              is_color_recognition_enabled,
+                                                                                                              np.squeeze(boxes),
+                                                                                                              np.squeeze(classes).astype(np.int32),
+                                                                                                              np.squeeze(scores),
+                                                                                                              category_index,
+                                                                                                              y_reference=roi,
+                                                                                                              deviation=deviation,
+                                                                                                              use_normalized_coordinates=True,
+                                                                                                              line_thickness=1)
+              # when the vehicle passed over line and counted, make the color of ROI line green
+              print("Count in frame: " + str(counter))
+              if counter == 1:
+                  cv2.line(input_frame, (680, roi), (900, roi), (0, 0xFF, 0), 3, 8)
+              else:
+                  cv2.line(input_frame, (680, roi), (900, roi), (0, 0, 0xFF), 3, 8)
 
-                    total_parcel = total_parcel + counter
-                    '''
-                    ********************************************************************************************************
-                                --------------------------------------------------------------
-                                    THIS INPUT THE NUMBER OF PARCELS WHICH HAS BEEN SORTED
-                                    # insert information text to video frame
-                                --------------------------------------------------------------
-                    ********************************************************************************************************
-                    '''
-                    cv2.putText(
-                        input_frame,
-                        'Detected Parcels: ' + str(total_parcel),
-                        (800, 100),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    '''
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    cv2.putText(
-                        input_frame,
-                        str(total_parcel),
-                        (550, 640),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        str(total_parcel),
-                        (576, 489),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        str(total_parcel),
-                        (595, 373),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        str(total_parcel),
-                        (612, 281),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        str(total_parcel),
-                        (625, 211),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        '0',
-                        (980, 630),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        '0',
-                        (952, 491),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        '0',
-                        (922, 370),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        '0',
-                        (890, 281),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    cv2.putText(
-                        input_frame,
-                        '0',
-                        (870, 209),
-                        font,
-                        0.8,
-                        (0, 0xFF, 0xFF),
-                        2,
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                    )
-                    '''
-                    
-                    if isShowFrame:
-                        # Display the resulting frame
-                        cv2.imshow('Vtp-Tracking', frame)
+              total_parcel = total_parcel + counter
+              '''
+              ********************************************************************************************************
+                          --------------------------------------------------------------
+                              THIS INPUT THE NUMBER OF PARCELS WHICH HAS BEEN SORTED
+                              # insert information text to video frame
+                          --------------------------------------------------------------
+              ********************************************************************************************************
+              '''
+              cv2.putText(
+                  input_frame,
+                  'Detected Parcels: ' + str(total_parcel),
+                  (800, 100),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              '''
+              font = cv2.FONT_HERSHEY_SIMPLEX
+              cv2.putText(
+                  input_frame,
+                  str(total_parcel),
+                  (550, 640),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  str(total_parcel),
+                  (576, 489),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  str(total_parcel),
+                  (595, 373),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  str(total_parcel),
+                  (612, 281),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  str(total_parcel),
+                  (625, 211),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  '0',
+                  (980, 630),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  '0',
+                  (952, 491),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  '0',
+                  (922, 370),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  '0',
+                  (890, 281),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                  input_frame,
+                  '0',
+                  (870, 209),
+                  font,
+                  0.8,
+                  (0, 0xFF, 0xFF),
+                  2,
+                  cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              '''
 
-                        if isWriteVideoOutput:
-                            #write result
-                            output_movie.write(input_frame)
-                    #Write log
-                    frame_counted += 1
-                    print("------ End process frame: " + str(frame_counted))
-                    # Press Q on keyboard to  exit
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                            break
+              if isShowFrame:
+                  # Display the resulting frame
+                  cv2.imshow('Vtp-Tracking', frame)
 
-                cap.release()
-                cv2.destroyAllWindows()
+                  if isWriteVideoOutput:
+                      #write result
+                      output_movie.write(input_frame)
+              #Write log
+              frame_counted += 1
+              print("------ End process frame: " + str(frame_counted))
+              # Press Q on keyboard to  exit
+              if cv2.waitKey(1) & 0xFF == ord('q'):
+                      break
+
+          cap.release()
+          cv2.destroyAllWindows()
 
 def object_counting(input_video, detection_graph, category_index, is_color_recognition_enabled):
 

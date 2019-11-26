@@ -833,19 +833,6 @@ def visualize_boxes_and_labels_on_image_array_y_axis(current_frame_number,
   # that correspond to the same location.
   csv_line_util = "not_available"
   counter = 0
-  '''
-  ROI_POSITION.insert(550, 640)
-  ROI_POSITION.insert(576, 489)
-  ROI_POSITION.insert(595, 373)
-  ROI_POSITION.insert(612, 281)
-  ROI_POSITION.insert(625, 211)
-
-  ROI_POSITION.insert(980, 630)
-  ROI_POSITION.insert(952, 491)
-  ROI_POSITION.insert(922, 370)
-  ROI_POSITION.insert(890, 281)
-  ROI_POSITION.insert(870, 209)
-  '''
   ROI_POSITION.insert(0, y_reference)
   DEVIATION.insert(0,deviation)
   is_vehicle_detected = []
