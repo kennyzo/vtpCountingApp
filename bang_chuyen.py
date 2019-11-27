@@ -17,7 +17,12 @@ input_video = "input_images_and_videos/20191126-M02-1"
 detection_graph, category_index = backbone.set_model('output_7kStepsSSD', 'parcel.pbtxt')
 
 is_color_recognition_enabled = 0 # set it to 1 for enabling the color prediction for the detected objects
-roi = 600 # roi line position
-deviation = 25 # the constant that represents the object counting area
+# Main count for count total parcels
+roi_y = 600 # roi line position
+# Count lines for couting chutes : [x_start, x_end, y_line]
+roi_chutes = [[536, 563, 716], [565, 432, 546], [588, 316, 415], [605, 238, 318], [615, 176, 241], [630, 131, 181],
+              [1023, 534, 711], [992, 412, 550], [958, 312, 419], [930, 242, 320], [904, 180, 244], [882, 125, 184]]
+# the constant that represents the object counting area
+deviation = 250
 
-object_counting_api.couting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, deviation, True, True) # counting all the objects
+object_counting_api.vlCouting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi_y, roi_chutes, deviation, True, True) # counting all the objects

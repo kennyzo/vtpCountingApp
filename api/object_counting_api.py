@@ -207,7 +207,7 @@ def cumulative_object_counting_x_axis(input_video, detection_graph, category_ind
             cap.release()
             cv2.destroyAllWindows()
 
-def couting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, deviation, isShowFrame, isWriteVideoOutput):
+def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, roi_chutes, deviation, isShowFrame, isWriteVideoOutput):
         total_parcel = 0
         # input video
         cap = cv2.VideoCapture(input_video + ".mp4")
@@ -265,25 +265,29 @@ def couting_parcel_passed_line(input_video, detection_graph, category_index, is_
 
              # Visualization of the results of a detection.
 
-              counter, csv_line, counting_mode = vis_util.visualize_boxes_and_labels_on_image_array_y_axis(
-                                                                                                              cap.get(1),
-                                                                                                              input_frame,
-                                                                                                              2,
-                                                                                                              is_color_recognition_enabled,
-                                                                                                              np.squeeze(boxes),
-                                                                                                              np.squeeze(classes).astype(np.int32),
-                                                                                                              np.squeeze(scores),
-                                                                                                              category_index,
-                                                                                                              y_reference=roi,
-                                                                                                              deviation=deviation,
-                                                                                                              use_normalized_coordinates=True,
-                                                                                                              line_thickness=1)
+              chutes_count, counter, csv_line = vis_util.vlVisualize_boxes_and_count(
+                                                                                                  cap.get(1),
+                                                                                                  input_frame,
+                                                                                                  2,
+                                                                                                  is_color_recognition_enabled,
+                                                                                                  np.squeeze(boxes),
+                                                                                                  np.squeeze(classes).astype(np.int32),
+                                                                                                  np.squeeze(scores),
+                                                                                                  category_index,
+                                                                                                  y_reference=roi,
+                                                                                                  chute_references=roi_chutes,
+                                                                                                  deviation=deviation,
+                                                                                                  use_normalized_coordinates=True,
+                                                                                                  line_thickness=1)
               # when the vehicle passed over line and counted, make the color of ROI line green
               print("Count in frame: " + str(counter))
               if counter == 1:
                   cv2.line(input_frame, (680, roi), (900, roi), (0, 0xFF, 0), 3, 8)
               else:
                   cv2.line(input_frame, (680, roi), (900, roi), (0, 0, 0xFF), 3, 8)
+              # couting for each chute
+              for roi_chute in roi_chutes:
+                cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2, 8)
 
               total_parcel = total_parcel + counter
               '''
@@ -294,15 +298,26 @@ def couting_parcel_passed_line(input_video, detection_graph, category_index, is_
                           --------------------------------------------------------------
               ********************************************************************************************************
               '''
+              chutes_count = [0, 1, 2, 3, 4]
               cv2.putText(
                   input_frame,
                   'Detected Parcels: ' + str(total_parcel),
-                  (800, 100),
+                  (50, 100),
                   font,
                   0.8,
                   (0, 0xFF, 0xFF),
                   2,
                   cv2.FONT_HERSHEY_SIMPLEX,
+              )
+              cv2.putText(
+                input_frame,
+                'Chutes count: ' + str(chutes_count),
+                (50, 125),
+                font,
+                0.6,
+                (0, 0xFF, 0xFF),
+                2,
+                cv2.FONT_HERSHEY_SIMPLEX,
               )
               '''
               font = cv2.FONT_HERSHEY_SIMPLEX
