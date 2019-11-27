@@ -27,7 +27,17 @@ def vlCount_objects_x_axis(top, bottom, right, left, crop_img, roi_position, dev
   is_parcel_passed = False
   distance = abs((right + left) / 2) - roi_position
   print("Distance of box center and roi line: " + str(distance))
-  if (distance < deviation):
+  if distance < deviation:
+    is_parcel_passed = True
+    image_saver.save_image(crop_img)  # save detected object image
+  print("box pass line: " + str(is_parcel_passed))
+  return is_parcel_passed
+
+def vlCount_objects_y_axis(top, bottom, right, left, crop_img, roi_position, deviation):
+  is_parcel_passed = False
+  distance = abs(((bottom + top) / 2) - roi_position)
+  print("Distance of box center and roi line: " + str(distance))
+  if distance < deviation:
     is_parcel_passed = True
     image_saver.save_image(crop_img)  # save detected object image
   print("box pass line: " + str(is_parcel_passed))

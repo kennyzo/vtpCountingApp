@@ -319,19 +319,11 @@ def vlDraw_bounding_box_on_image(current_frame_number, image,
   detected_vehicle_image = image_temp[int(top):int(bottom), int(left):int(right)]
 
   '''if(bottom > ROI_POSITION): # if the vehicle get in ROI area, vehicle predicted_speed predicted_color algorithms are called - 200 is an arbitrary value, for my case it looks very well to set position of ROI line at y pixel 200'''
-  if (x_axis[0] == 1):
-    box_pass_total_line = object_counter_x_axis.vlCount_objects_x_axis(top, bottom,
+  box_pass_total_line = object_counter_x_axis.vlCount_objects_y_axis(top, bottom,
                                                                          right, left,
                                                                          detected_vehicle_image,
                                                                          ROI_POSITION[0],
                                                                          DEVIATION[0])
-  elif (mode_number[0] == 2):
-    box_pass_total_line = object_counter_x_axis.vlCount_objects_x_axis(top, bottom,
-                                                                         right, left,
-                                                                         detected_vehicle_image,
-                                                                         ROI_POSITION[0],
-                                                                         DEVIATION[0])
-
   if (1 in is_color_recognition_enable):
     predicted_color = color_recognition_api.color_recognition(detected_vehicle_image)
 
@@ -1381,6 +1373,8 @@ def vlVisualize_boxes_and_count(current_frame_number,
       )'''
         
     display_str_list=box_to_display_str_map[box]
+    # Check box pass total line or not
+    box_pass_total_line = False
 
     if(mode == 1 and targeted_objects == None):
       counting_mode = counting_mode + str(display_str_list)

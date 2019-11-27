@@ -23,6 +23,6 @@ roi_y = 600 # roi line position
 roi_chutes = [[536, 563, 716], [565, 432, 546], [588, 316, 415], [605, 238, 318], [615, 176, 241], [630, 131, 181],
               [1023, 534, 711], [992, 412, 550], [958, 312, 419], [930, 242, 320], [904, 180, 244], [882, 125, 184]]
 # the constant that represents the object counting area
-deviation = 250
+deviation = 25
 
 object_counting_api.vlCouting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi_y, roi_chutes, deviation, True, True) # counting all the objects
