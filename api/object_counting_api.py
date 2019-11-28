@@ -5,10 +5,13 @@
 #----------------------------------------------
 
 import tensorflow as tf
+from utils import visualization_utils as vis_util
+from time import gmtime, strftime
 import csv
 import cv2
 import numpy as np
-from utils import visualization_utils as vis_util
+import os
+
 
 # Variables
 #total_passed_vehicle = 0  # using it to count vehicles
@@ -217,7 +220,7 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
         fps = int(cap.get(cv2.CAP_PROP_FPS))
 
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        output_movie = cv2.VideoWriter(input_video + '-writed.mp4', fourcc, fps, (width, height))
+        output_movie = cv2.VideoWriter(input_video + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + '.mp4', fourcc, fps, (width, height))
 
         total_parcel = 0
         speed = "waiting..."
@@ -226,7 +229,6 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
         color = "waiting..."
         counting_mode = "..."
         width_heigh_taken = True
-        frame_counted = 0
 
         with detection_graph.as_default():
           with tf.Session(graph=detection_graph) as sess:
@@ -245,7 +247,7 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
             # for all the frames that are extracted from input video
             while(cap.isOpened()):
               ret, frame = cap.read()
-              print('Start process frame: ' + str(frame_counted) + '...')
+              print('Start process frame: ' + str(cap.get(1)) + '...')
               if not  ret:
                   print("end of the video file...")
                   break
@@ -265,31 +267,24 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
 
              # Visualization of the results of a detection.
 
-              chutes_count, counter, csv_line = vis_util.vlVisualize_boxes_and_count(
-                                                                                                  cap.get(1),
-                                                                                                  input_frame,
-                                                                                                  2,
-                                                                                                  is_color_recognition_enabled,
-                                                                                                  np.squeeze(boxes),
-                                                                                                  np.squeeze(classes).astype(np.int32),
-                                                                                                  np.squeeze(scores),
-                                                                                                  category_index,
-                                                                                                  y_reference=roi,
-                                                                                                  chute_references=roi_chutes,
-                                                                                                  deviation=deviation,
-                                                                                                  use_normalized_coordinates=True,
-                                                                                                  line_thickness=1)
+              chutes_count, counter, csv_line = vis_util.vlVisualize_boxes_and_count(cap.get(1),
+                                                                                     input_frame,
+                                                                                     2,
+                                                                                     is_color_recognition_enabled,
+                                                                                     np.squeeze(boxes),
+                                                                                     np.squeeze(classes).astype(np.int32),
+                                                                                     np.squeeze(scores),
+                                                                                     category_index,
+                                                                                     y_reference=roi,
+                                                                                     chute_references=roi_chutes,
+                                                                                     deviation=deviation,
+                                                                                     use_normalized_coordinates=True,
+                                                                                     line_thickness=1)
               # when the vehicle passed over line and counted, make the color of ROI line green
-              print("Count in frame: " + str(counter))
-              if counter == 1:
-                  cv2.line(input_frame, (680, roi), (900, roi), (0, 0xFF, 0), 3, 8)
-              else:
-                  cv2.line(input_frame, (680, roi), (900, roi), (0, 0, 0xFF), 3, 8)
-              # couting for each chute
+              print("==================> Count in frame: " + str(counter))
+
               for roi_chute in roi_chutes:
                 cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2, 8)
-
-              total_parcel = total_parcel + counter
               '''
               ********************************************************************************************************
                           --------------------------------------------------------------
@@ -298,6 +293,7 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
                           --------------------------------------------------------------
               ********************************************************************************************************
               '''
+              total_parcel = total_parcel + counter
               chutes_count = [0, 1, 2, 3, 4]
               cv2.putText(
                   input_frame,
@@ -319,120 +315,23 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
                 2,
                 cv2.FONT_HERSHEY_SIMPLEX,
               )
-              '''
-              font = cv2.FONT_HERSHEY_SIMPLEX
-              cv2.putText(
-                  input_frame,
-                  str(total_parcel),
-                  (550, 640),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  str(total_parcel),
-                  (576, 489),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  str(total_parcel),
-                  (595, 373),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  str(total_parcel),
-                  (612, 281),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  str(total_parcel),
-                  (625, 211),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  '0',
-                  (980, 630),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  '0',
-                  (952, 491),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  '0',
-                  (922, 370),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  '0',
-                  (890, 281),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              cv2.putText(
-                  input_frame,
-                  '0',
-                  (870, 209),
-                  font,
-                  0.8,
-                  (0, 0xFF, 0xFF),
-                  2,
-                  cv2.FONT_HERSHEY_SIMPLEX,
-              )
-              '''
+              if counter > 0:
+                # save frame as JPEG file if detected pacerl passed
+                cv2.imwrite("log_images/" + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + "%d.jpg" % cap.get(1), input_frame)
+                cv2.line(input_frame, (680, roi), (900, roi), (0, 0xFF, 0), 3, 8)
+              else:
+                  cv2.line(input_frame, (680, roi), (900, roi), (0, 0, 0xFF), 3, 8)
+              # couting for each chute
 
               if isShowFrame:
-                  # Display the resulting frame
-                  cv2.imshow('Vtp-Tracking', frame)
+                # Display the resulting frame
+                cv2.imshow('Vtp-Tracking', frame)
 
-                  if isWriteVideoOutput:
-                      #write result
-                      output_movie.write(input_frame)
+              if isWriteVideoOutput:
+                #write result
+                output_movie.write(input_frame)
               #Write log
-              frame_counted += 1
-              print("------ End process frame: " + str(frame_counted))
+              print("------ End process frame: " + str(cap.get(1)))
               # Press Q on keyboard to  exit
               if cv2.waitKey(1) & 0xFF == ord('q'):
                       break

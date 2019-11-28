@@ -1278,7 +1278,7 @@ def vlVisualize_boxes_and_count(current_frame_number,
                               deviation=None,
                               instance_masks=None,
                               keypoints=None,
-                              use_normalized_coordinates=False,
+                              use_normalized_coordinates=True,
                               max_boxes_to_draw=20,
                               min_score_thresh=.5,
                               agnostic_mode=False,
@@ -1406,43 +1406,38 @@ def vlVisualize_boxes_and_count(current_frame_number,
                   use_normalized_coordinates=use_normalized_coordinates)
     # vtp handling
     elif (targeted_objects == None):
-            if instance_masks is not None:
-              draw_mask_on_image_array(image, box_to_instance_masks_map[box], color=color)
-            box_pass_total_line, chute_parcel_detected, csv_line, update_csv = vlDraw_bounding_box_on_image_array(current_frame_number,
-                                                                                                               image,
-                                                                                                               ymin,
-                                                                                                               xmin,
-                                                                                                               ymax,
-                                                                                                               xmax,
-                                                                                                               color=color,
-                                                                                                               thickness=line_thickness,
-                                                                                                               display_str_list=box_to_display_str_map[box],
-                                                                                                               use_normalized_coordinates=use_normalized_coordinates)
-      
-            if keypoints is not None:
-              draw_keypoints_on_image_array(
-                  image,
-                  box_to_keypoints_map[box],
-                  color=color,
-                  radius=line_thickness / 2,
-                  use_normalized_coordinates=use_normalized_coordinates)
-
-  if(box_pass_total_line):
-        counter = 1
-        del is_vehicle_detected[:]
-        is_vehicle_detected = []        
-        csv_line_util = class_name + "," + csv_line
-  if chute_parcel_detected is not 0:
-    arr_parcel_enter_chute.append(chute_parcel_detected)
+      if instance_masks is not None:
+        draw_mask_on_image_array(image, box_to_instance_masks_map[box], color=color)
+      box_pass_total_line, chute_parcel_detected, csv_line, update_csv = vlDraw_bounding_box_on_image_array(current_frame_number,
+                                                                                                         image,
+                                                                                                         ymin,
+                                                                                                         xmin,
+                                                                                                         ymax,
+                                                                                                         xmax,
+                                                                                                         color=color,
+                                                                                                         thickness=line_thickness,
+                                                                                                         display_str_list=box_to_display_str_map[box],
+                                                                                                         use_normalized_coordinates=use_normalized_coordinates)
+      if keypoints is not None:
+        draw_keypoints_on_image_array(image,
+                                      box_to_keypoints_map[box],
+                                      color=color,
+                                      radius=line_thickness / 2,
+                                      use_normalized_coordinates=use_normalized_coordinates)
+    if (box_pass_total_line):
+      counter += 1
+      del is_vehicle_detected[:]
+      is_vehicle_detected = []
+      csv_line_util = class_name + "," + csv_line
+    if chute_parcel_detected is not 0:
+      arr_parcel_enter_chute.append(chute_parcel_detected)
 
   if(mode == 1):
     counting_mode = counting_mode.replace("['", " ").replace("']", " ").replace("%", "")
     counting_mode = ''.join([i for i in counting_mode.replace("['", " ").replace("']", " ").replace("%", "") if not i.isdigit()])
     counting_mode = str(custom_string_util.word_count(counting_mode))
     counting_mode = counting_mode.replace("{", "").replace("}", "")
-
     return arr_parcel_enter_chute, counter, csv_line_util, counting_mode
-
   else:
     return arr_parcel_enter_chute, counter, csv_line_util
 
