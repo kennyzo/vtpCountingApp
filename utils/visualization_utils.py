@@ -27,6 +27,7 @@ import numpy
 import os
 from time import gmtime, strftime
 
+
 # string utils - import
 from utils.string_utils import custom_string_util
 
@@ -1327,6 +1328,7 @@ def vlVisualize_boxes_and_count(current_frame_number,
   CHUTE_REFERENCES.append(chute_references)
   DEVIATION.insert(0,deviation)
   is_vehicle_detected = []
+  arr_box_counting = []
   chute_parcel_detected = 0; #This store chute for each box
   mode_number.insert(0,mode)
   is_color_recognition_enable.insert(0,color_recognition_status)
@@ -1437,15 +1439,16 @@ def vlVisualize_boxes_and_count(current_frame_number,
       cv2.imwrite("./log_images/" + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + "%d.jpg" % current_frame_number, image)
       old_value = arr_parcel_enter_chute[chute_parcel_detected]
       arr_parcel_enter_chute[chute_parcel_detected] = old_value + 1
+      arr_box_counting.append(chute_parcel_detected)
 
   if(mode == 1):
     counting_mode = counting_mode.replace("['", " ").replace("']", " ").replace("%", "")
     counting_mode = ''.join([i for i in counting_mode.replace("['", " ").replace("']", " ").replace("%", "") if not i.isdigit()])
     counting_mode = str(custom_string_util.word_count(counting_mode))
     counting_mode = counting_mode.replace("{", "").replace("}", "")
-    return arr_parcel_enter_chute, counter, csv_line_util, counting_mode
+    return arr_box_counting, arr_parcel_enter_chute, counter, csv_line_util, counting_mode
   else:
-    return arr_parcel_enter_chute, counter, csv_line_util
+    return arr_box_counting, arr_parcel_enter_chute, counter, csv_line_util
 
 def add_cdf_image_summary(values, name):
   """Adds a tf.summary.image for a CDF plot of the values.

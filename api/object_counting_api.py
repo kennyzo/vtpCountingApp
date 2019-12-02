@@ -7,11 +7,14 @@
 import tensorflow as tf
 from utils import visualization_utils as vis_util
 from time import gmtime, strftime
+from datetime import datetime
 import csv
 import cv2
 import numpy as np
 import os
 
+# Imports MongoDB
+import pymongo
 
 # Variables
 #total_passed_vehicle = 0  # using it to count vehicles
@@ -213,7 +216,6 @@ def cumulative_object_counting_x_axis(input_video, detection_graph, category_ind
 def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, roi_chutes, deviation, isShowFrame, isWriteVideoOutput):
   # input video
   cap = cv2.VideoCapture(input_video + ".mp4")
-
   height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
   width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
   fps = int(cap.get(cv2.CAP_PROP_FPS))
@@ -222,6 +224,8 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
   output_movie = cv2.VideoWriter(input_video + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + '.mp4', fourcc, fps, (width, height))
 
   # Declare variables
+  old_chutes_count = [0, 0, 0, 0, 0, 0,
+                      0, 0, 0, 0, 0, 0]
   total_parcel = 0
   speed = "waiting..."
   direction = "waiting..."
@@ -229,6 +233,11 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
   color = "waiting..."
   counting_mode = "..."
   width_heigh_taken = True
+
+  # Connect to MongoDB
+  vlClient = pymongo.MongoClient("mongodb://localhost:27017/")
+  vlDB = vlClient["vlparceltracking"]
+  vlParcelCollection = vlDB["chutecountingmnt"]
 
   with detection_graph.as_default():
     with tf.Session(graph=detection_graph) as sess:
@@ -247,7 +256,7 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
       # for all the frames that are extracted from input video
       while(cap.isOpened()):
         ret, frame = cap.read()
-        print('Start process frame: ' + str(cap.get(1)) + '...')
+        #print('Start process frame: ' + str(cap.get(1)) + '...')
         if not  ret:
             print("end of the video file...")
             break
@@ -267,7 +276,7 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
 
        # Visualization of the results of a detection.
 
-        chutes_count, counter, csv_line = vis_util.vlVisualize_boxes_and_count(cap.get(1),
+        arr_box_counting, chutes_count, counter, csv_line = vis_util.vlVisualize_boxes_and_count(cap.get(1),
                                                                                input_frame,
                                                                                2,
                                                                                is_color_recognition_enabled,
@@ -280,8 +289,19 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
                                                                                deviation=deviation,
                                                                                use_normalized_coordinates=True,
                                                                                line_thickness=1)
+
+        # Database handle
+        arr_chute_count = [chutes_count[i] - old_chutes_count[i] for i in range(len(old_chutes_count))]
+        old_chutes_count = chutes_count
+        print("arr_chute_count: ")
+        print(arr_chute_count)
+        for c in arr_box_counting:
+          print("Insert  " + str(c) + " to databases")
+          ret = vlParcelCollection.insert_one({"chuteno": c, "timesorted": datetime.now()})
+          print(ret)
+                # start insert here
         # when the vehicle passed over line and counted, make the color of ROI line green
-        print("==================> Count in frame: " + str(counter))
+        #print("==================> Count in frame: " + str(counter))
 
         '''
         ********************************************************************************************************
@@ -313,8 +333,8 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
           #write result
           output_movie.write(input_frame)
         #Write log
-        print(str(chutes_count))
-        print("------ End process frame: " + str(cap.get(1)))
+        #print(str(chutes_count))
+        #print("------ End process frame: " + str(cap.get(1)))
         # Press Q on keyboard to  exit
         if cv2.waitKey(1) & 0xFF == ord('q'):
                 break

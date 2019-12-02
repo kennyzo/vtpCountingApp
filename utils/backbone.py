@@ -1,5 +1,9 @@
 import glob, os, tarfile, urllib
 import tensorflow as tf
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+
 from utils import label_map_util
 
 def set_model(model_name, label_name):
