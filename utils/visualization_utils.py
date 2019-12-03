@@ -25,7 +25,8 @@ import tensorflow as tf
 import cv2
 import numpy
 import os
-from time import gmtime, strftime
+import time
+from datetime import datetime
 
 
 # string utils - import
@@ -360,16 +361,16 @@ def vlDraw_bounding_box_on_image(current_frame_number, image,
   for display_str in display_str_list[::-1]:
     text_width, text_height = font.getsize(display_str)
     margin = np.ceil(0.05 * text_height)
-    draw.rectangle(
-      [(left, text_bottom - text_height - 2 * margin), (left + text_width,
-                                                        text_bottom)],
-      fill=color)
-    draw.text(
-      (left + margin, text_bottom - text_height - margin),
-      display_str,
-      fill='black',
-      font=font)
-    text_bottom -= text_height - 2 * margin
+    # draw.rectangle(
+    #   [(left, text_bottom - text_height - 2 * margin), (left + text_width,
+    #                                                     text_bottom)],
+    #   fill=color)
+    # draw.text(
+    #   (left + margin, text_bottom - text_height - margin),
+    #   display_str,
+    #   fill='black',
+    #   font=font)
+    # text_bottom -= text_height - 2 * margin
     return box_pass_total_line, chute_parcel_detected, csv_line, update_csv
 
 def draw_bounding_boxes_on_image_array(image,
@@ -1436,10 +1437,11 @@ def vlVisualize_boxes_and_count(current_frame_number,
     if chute_parcel_detected is not -1:
       print('Detected pass chute: ' + str(chute_parcel_detected))
       # save frame as JPEG file if detected pacerl passed
-      cv2.imwrite("./log_images/" + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + "%d.jpg" % current_frame_number, image)
+      path_file = "./log_images/Chute" + str(chute_parcel_detected) + "/" + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + "%d.jpg" % current_frame_number
+      cv2.imwrite(path_file, image)
       old_value = arr_parcel_enter_chute[chute_parcel_detected]
       arr_parcel_enter_chute[chute_parcel_detected] = old_value + 1
-      arr_box_counting.append(chute_parcel_detected)
+      arr_box_counting.append([chute_parcel_detected, path_file])
 
   if(mode == 1):
     counting_mode = counting_mode.replace("['", " ").replace("']", " ").replace("%", "")

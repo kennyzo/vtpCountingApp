@@ -13,7 +13,6 @@ import cv2
 import numpy as np
 import os
 
-# Imports MongoDB
 import pymongo
 
 # Variables
@@ -26,7 +25,7 @@ import pymongo
 *****************************************************************
 '''
 
-def cumulative_object_counting_x_axis(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, deviation):         
+def cumulative_object_counting_x_axis(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, deviation):
         # input video
         cap = cv2.VideoCapture(input_video)
 
@@ -213,7 +212,7 @@ def cumulative_object_counting_x_axis(input_video, detection_graph, category_ind
             cap.release()
             cv2.destroyAllWindows()
 
-def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, is_color_recognition_enabled, roi, roi_chutes, deviation, isShowFrame, isWriteVideoOutput):
+def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_graph, category_index, is_color_recognition_enabled, roi, roi_chutes, deviation, isShowFrame, isWriteVideoOutput):
   # input video
   cap = cv2.VideoCapture(input_video + ".mp4")
   height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -234,11 +233,6 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
   counting_mode = "..."
   width_heigh_taken = True
 
-  # Connect to MongoDB
-  vlClient = pymongo.MongoClient("mongodb://localhost:27017/")
-  vlDB = vlClient["vlparceltracking"]
-  vlParcelCollection = vlDB["chutecountingmnt"]
-
   with detection_graph.as_default():
     with tf.Session(graph=detection_graph) as sess:
       # Definite input and output Tensors for detection_graph
@@ -258,7 +252,7 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
         ret, frame = cap.read()
         #print('Start process frame: ' + str(cap.get(1)) + '...')
         if not  ret:
-            print("end of the video file...")
+            print("End processing...")
             break
 
         input_frame = frame
@@ -293,11 +287,11 @@ def vlCouting_parcel_passed_line(input_video, detection_graph, category_index, i
         # Database handle
         arr_chute_count = [chutes_count[i] - old_chutes_count[i] for i in range(len(old_chutes_count))]
         old_chutes_count = chutes_count
-        print("arr_chute_count: ")
-        print(arr_chute_count)
+        #print("arr_chute_count: ")
+        #print(arr_chute_count)
         for c in arr_box_counting:
           print("Insert  " + str(c) + " to databases")
-          ret = vlParcelCollection.insert_one({"chuteno": c, "timesorted": datetime.now()})
+          ret = vlParcelCollection.insert_one({"chuteno": c[0], "timesorted": datetime.now(), "path_image": c[1]})
           print(ret)
                 # start insert here
         # when the vehicle passed over line and counted, make the color of ROI line green
