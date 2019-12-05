@@ -225,6 +225,8 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
   # Declare variables
   old_chutes_count = [0, 0, 0, 0, 0, 0,
                       0, 0, 0, 0, 0, 0]
+  chutes_count = [0, 0, 0, 0, 
+		  0, 0, 0, 0]
   total_parcel = 0
   speed = "waiting..."
   direction = "waiting..."
