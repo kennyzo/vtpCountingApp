@@ -1,7 +1,7 @@
 #----------------------------------------------
-#--- Author         : Ahmet Ozlu
-#--- Mail           : ahmetozlu93@gmail.com
-#--- Date           : 27th January 2018
+#--- Author         : HL-Zo
+#--- Mail           : hunglaidangvn@gmail.com
+#--- Date           : 2nd December 2019
 #----------------------------------------------
 
 # Imports
@@ -18,10 +18,10 @@ MONGO_DB_LINK = "mongodb://localhost:27017/"
 MONGO_DB_NAME = "vlparceltracking"
 MONGO_DB_COLL = "vlChuteMngt"
 
-input_video = "input_images_and_videos/M02-20191203-11h19"
+input_video = "input_images_and_videos/M02-20191203-8h34"
 
 # By default I use an "SSD with Mobilenet" model here. See the detection model zoo (https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) for a list of other models that can be run out-of-the-box with varying speeds and accuracies.
-detection_graph, category_index = backbone.set_model('output-91classes-8batchsize-6401', 'parcel.pbtxt')
+detection_graph, category_index = backbone.set_model('output-19902', 'parcel.pbtxt')
 
 is_color_recognition_enabled = 0 # set it to 1 for enabling the color prediction for the detected objects
 # Main count for count total parcels
