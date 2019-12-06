@@ -215,6 +215,7 @@ def cumulative_object_counting_x_axis(input_video, detection_graph, category_ind
 def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_graph, category_index, is_color_recognition_enabled, roi, roi_chutes, deviation, isShowFrame, isWriteVideoOutput):
   # input video
   cap = cv2.VideoCapture(input_video + ".mp4")
+  #cap = cv2.VideoCapture('rtsp://admin:cntt@123@192.168.0.111')
   height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
   width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
   fps = int(cap.get(cv2.CAP_PROP_FPS))
