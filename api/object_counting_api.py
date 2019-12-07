@@ -1,7 +1,7 @@
 #----------------------------------------------
-#--- Author         : Ahmet Ozlu
-#--- Mail           : ahmetozlu93@gmail.com
-#--- Date           : 27th January 2018
+#--- Author         : HL-Zo
+#--- Mail           : hunglaidangvn@gmail.com
+#--- Date           : 2nd December 2019
 #----------------------------------------------
 
 import tensorflow as tf
@@ -219,14 +219,12 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
   width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
   fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-  fourcc = cv2.VideoWriter_fourcc(*'XVID')
+  fourcc = cv2.VideoWriter_fourcc(*'X264')
   output_movie = cv2.VideoWriter(input_video + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + '.mp4', fourcc, fps, (width, height))
 
   # Declare variables
-  old_chutes_count = [0, 0, 0, 0, 0, 0,
-                      0, 0, 0, 0, 0, 0]
-  chutes_count = [0, 0, 0, 0, 
-		  0, 0, 0, 0]
+  old_chutes_count  =[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  chutes_count      =[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   total_parcel = 0
   speed = "waiting..."
   direction = "waiting..."
@@ -308,7 +306,7 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         ********************************************************************************************************
         '''
         for i in range(len(roi_chutes)):
-          cv2.putText(input_frame, str(chutes_count[i]), (roi_chutes[i][0], roi_chutes[i][1]), font, 1, (0, 0xFF, 0xFF), 2)
+          cv2.putText(input_frame, str(chutes_count[i]), (roi_chutes[i][0], roi_chutes[i][1]), font, 1.2, (0, 0xFF, 0xFF), 2)
         #for roi_chute in roi_chutes:
         #  cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2,8)
         #cv2.putText(input_frame,', '.join(map(str, chutes_count)),(50, 125),font,0.6,(0, 0xFF, 0xFF),2,cv2.FONT_HERSHEY_SIMPLEX,)

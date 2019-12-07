@@ -1,7 +1,7 @@
 #----------------------------------------------
-#--- Author         : Ahmet Ozlu
-#--- Mail           : ahmetozlu93@gmail.com
-#--- Date           : 27th January 2018
+#--- Author         : HL-Zo
+#--- Mail           : hunglaidangvn@gmail.com
+#--- Date           : 2nd December 2019
 #----------------------------------------------
 
 """A set of functions that are used for visualization.
@@ -279,7 +279,7 @@ def vlDraw_bounding_box_on_image(current_frame_number, image,
                                xmin,
                                ymax,
                                xmax,
-                               color='red',
+                               color='brown',
                                thickness=4,
                                display_str_list=(),
                                use_normalized_coordinates=True):
@@ -315,8 +315,7 @@ def vlDraw_bounding_box_on_image(current_frame_number, image,
                                   ymin * im_height, ymax * im_height)
   else:
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
-  draw.line([(left, top), (left, bottom), (right, bottom),
-             (right, top), (left, top)], width=thickness, fill=color)
+  draw.line([(left, top), (left, bottom), (right, bottom), (right, top), (left, top)], width=thickness, fill=color)
 
   predicted_direction = "n.a."  # means not available, it is just initialization
 
