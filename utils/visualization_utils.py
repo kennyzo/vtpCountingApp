@@ -175,105 +175,6 @@ def vlDraw_bounding_box_on_image_array(current_frame_number, image,
   np.copyto(image, np.array(image_pil))
   return box_pass_total_line, chute_parcel_detected, csv_line, update_csv
 
-def draw_bounding_box_on_image(current_frame_number,image,
-                               ymin,
-                               xmin,
-                               ymax,
-                               xmax,
-                               color='red',
-                               thickness=4,
-                               display_str_list=(),
-                               use_normalized_coordinates=True):
-  """Adds a bounding box to an image.
-
-  Each string in display_str_list is displayed on a separate line above the
-  bounding box in black text on a rectangle filled with the input 'color'.
-  If the top of the bounding box extends to the edge of the image, the strings
-  are displayed below the bounding box.
-
-  Args:
-    image: a PIL.Image object.
-    ymin: ymin of bounding box.
-    xmin: xmin of bounding box.
-    ymax: ymax of bounding box.
-    xmax: xmax of bounding box.
-    color: color to draw bounding box. Default is red.
-    thickness: line thickness. Default value is 4.
-    display_str_list: list of strings to display in box
-                      (each to be shown on its own line).
-    use_normalized_coordinates: If True (default), treat coordinates
-      ymin, xmin, ymax, xmax as relative to the image.  Otherwise treat
-      coordinates as absolute.
-  """
-  csv_line = "" # to create new csv line consists of vehicle type, predicted_speed, color and predicted_direction
-  update_csv = False # update csv for a new vehicle that are passed from ROI - just one new line for each vehicles
-  is_vehicle_detected = [0]
-  draw = ImageDraw.Draw(image)
-  im_width, im_height = image.size
-  if use_normalized_coordinates:
-    (left, right, top, bottom) = (xmin * im_width, xmax * im_width,
-                                  ymin * im_height, ymax * im_height)
-  else:
-    (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
-  draw.line([(left, top), (left, bottom), (right, bottom),
-             (right, top), (left, top)], width=thickness, fill=color)
-
-  predicted_direction = "n.a." # means not available, it is just initialization
-
-  image_temp = numpy.array(image)
-  detected_vehicle_image = image_temp[int(top):int(bottom), int(left):int(right)]
-
-  '''if(bottom > ROI_POSITION): # if the vehicle get in ROI area, vehicle predicted_speed predicted_color algorithms are called - 200 is an arbitrary value, for my case it looks very well to set position of ROI line at y pixel 200'''
-  if(x_axis[0] == 1):
-    predicted_direction, is_vehicle_detected, update_csv = object_counter_x_axis.count_objects_x_axis(top, bottom, right, left, detected_vehicle_image, ROI_POSITION[0], ROI_POSITION[0]+DEVIATION[0], ROI_POSITION[0]+(DEVIATION[0]*2), DEVIATION[0])
-  elif(mode_number[0] == 2):
-    predicted_direction, is_vehicle_detected, update_csv = object_counter.count_objects(top, bottom, right, left, detected_vehicle_image, ROI_POSITION[0], ROI_POSITION[0]+DEVIATION[0], ROI_POSITION[0]+(DEVIATION[0]*2), DEVIATION[0])
-
-  if(1 in is_color_recognition_enable):
-    predicted_color = color_recognition_api.color_recognition(detected_vehicle_image)    
-  
-  try:
-    font = ImageFont.truetype('arial.ttf', 16)
-  except IOError:
-    font = ImageFont.load_default()
-
-  # If the total height of the display strings added to the top of the bounding
-  # box exceeds the top of the image, stack the strings below the bounding box
-  # instead of above.
-  if(1 in is_color_recognition_enable):
-    display_str_list[0] = predicted_color + " " + display_str_list[0]
-    csv_line = predicted_color + "," + str (predicted_direction) # csv line created
-  else:
-    display_str_list[0] = display_str_list[0]
-    csv_line = str (predicted_direction) # csv line created
-  
-  display_str_heights = [font.getsize(ds)[1] for ds in display_str_list]
-
-  # Each display_str has a top and bottom margin of 0.05x.
-  total_display_str_height = (1 + 2 * 0.05) * sum(display_str_heights)
-
-  if top > total_display_str_height:
-    text_bottom = top
-  else:
-    text_bottom = bottom + total_display_str_height
-
-  # Reverse list and print from bottom to top.
-  for display_str in display_str_list[::-1]:
-    text_width, text_height = font.getsize(display_str)
-    margin = np.ceil(0.05 * text_height)
-    draw.rectangle(
-        [(left, text_bottom - text_height - 2 * margin), (left + text_width,
-                                                          text_bottom)],
-        fill=color)
-    draw.text(
-        (left + margin, text_bottom - text_height - margin),
-        display_str,
-        fill='black',
-        font=font)
-    text_bottom -= text_height - 2 * margin
-    return is_vehicle_detected, csv_line, update_csv
-
-
 def vlDraw_bounding_box_on_image(current_frame_number, image,
                                ymin,
                                xmin,
@@ -315,7 +216,8 @@ def vlDraw_bounding_box_on_image(current_frame_number, image,
                                   ymin * im_height, ymax * im_height)
   else:
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
-  draw.line([(left, top), (left, bottom), (right, bottom), (right, top), (left, top)], width=thickness, fill=color)
+  draw.line([(left, top), (left, bottom), (right, bottom),
+             (right, top), (left, top)], width=thickness, fill='red')
 
   predicted_direction = "n.a."  # means not available, it is just initialization
 
@@ -398,90 +300,6 @@ def draw_bounding_boxes_on_image_array(image,
   draw_bounding_boxes_on_image(image_pil, boxes, color, thickness, display_str_list_list)
   np.copyto(image, np.array(image_pil))
 
-
-def draw_bounding_boxes_on_image(image,
-                                 boxes,
-                                 color='red',
-                                 thickness=4,
-                                 display_str_list_list=()):
-  """Draws bounding boxes on image.
-
-  Args:
-    image: a PIL.Image object.
-    boxes: a 2 dimensional numpy array of [N, 4]: (ymin, xmin, ymax, xmax).
-           The coordinates are in normalized format between [0, 1].
-    color: color to draw bounding box. Default is red.
-    thickness: line thickness. Default value is 4.
-    display_str_list_list: list of list of strings.
-                           a list of strings for each bounding box.
-                           The reason to pass a list of strings for a
-                           bounding box is that it might contain
-                           multiple labels.
-
-  Raises:
-    ValueError: if boxes is not a [N, 4] array
-  """
-  boxes_shape = boxes.shape
-  if not boxes_shape:
-    return
-  if len(boxes_shape) != 2 or boxes_shape[1] != 4:
-    raise ValueError('Input must be of size [N, 4]')
-  for i in range(boxes_shape[0]):
-    display_str_list = ()
-    if display_str_list_list:
-      display_str_list = display_str_list_list[i]
-    
-    draw_bounding_box_on_image(image, boxes[i, 0], boxes[i, 1], boxes[i, 2],
-                               boxes[i, 3], color, thickness, display_str_list)
-
-def draw_bounding_boxes_on_image_tensors(images,
-                                         boxes,
-                                         classes,
-                                         scores,
-                                         category_index,
-                                         max_boxes_to_draw=20,
-                                         min_score_thresh=0.2):
-  """Draws bounding boxes on batch of image tensors.
-
-  Args:
-    images: A 4D uint8 image tensor of shape [N, H, W, C].
-    boxes: [N, max_detections, 4] float32 tensor of detection boxes.
-    classes: [N, max_detections] int tensor of detection classes. Note that
-      classes are 1-indexed.
-    scores: [N, max_detections] float32 tensor of detection scores.
-    category_index: a dict that maps integer ids to category dicts. e.g.
-      {1: {1: 'dog'}, 2: {2: 'cat'}, ...}
-    max_boxes_to_draw: Maximum number of boxes to draw on an image. Default 20.
-    min_score_thresh: Minimum score threshold for visualization. Default 0.2.
-
-  Returns:
-    4D image tensor of type uint8, with boxes drawn on top.
-  """
-  visualize_boxes_fn = functools.partial(
-      visualize_boxes_and_labels_on_image_array,
-      category_index=category_index,
-      instance_masks=None,
-      keypoints=None,
-      use_normalized_coordinates=True,
-      max_boxes_to_draw=max_boxes_to_draw,
-      min_score_thresh=min_score_thresh,
-      agnostic_mode=False,
-      line_thickness=4)
-
-  def draw_boxes(image_boxes_classes_scores):
-    """Draws boxes on image."""
-    (image, boxes, classes, scores) = image_boxes_classes_scores
-    image_with_boxes = tf.py_func(visualize_boxes_fn,
-                                  [image, boxes, classes, scores], tf.uint8)
-    return image_with_boxes
-
-  images = tf.map_fn(
-      draw_boxes, (images, boxes, classes, scores),
-      dtype=tf.uint8,
-      back_prop=False)
-  return images
-
-
 def draw_keypoints_on_image_array(image,
                                   keypoints,
                                   color='red',
@@ -501,7 +319,6 @@ def draw_keypoints_on_image_array(image,
   draw_keypoints_on_image(image_pil, keypoints, color, radius,
                           use_normalized_coordinates)
   np.copyto(image, np.array(image_pil))
-
 
 def draw_keypoints_on_image(image,
                             keypoints,
@@ -683,7 +500,6 @@ def visualize_boxes_and_labels_on_image_array(current_frame_number,
                 xmin,
                 ymax,
                 xmax,
-                color=color,
                 thickness=line_thickness,
                 display_str_list=box_to_display_str_map[box],
                 use_normalized_coordinates=use_normalized_coordinates) 
