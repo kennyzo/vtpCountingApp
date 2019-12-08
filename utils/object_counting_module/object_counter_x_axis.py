@@ -2,8 +2,10 @@ from utils.image_utils import image_saver
 
 is_vehicle_detected = [0]
 bottom_position_of_detected_vehicle = [0]
-roi_chutes = [[0, 536, 563, 716], [1, 565, 432, 546], [2, 588, 316, 415], [3, 605, 238, 318], [4, 615, 176, 241], [5, 630, 131, 181],
-              [6, 1023, 534, 711], [7, 992, 412, 550], [8, 958, 312, 419], [9, 930, 242, 320], [10, 904, 180, 244], [11, 882, 125, 184]]
+roi_chutes = [[0, 562, 550, 719], [1, 586, 416, 552], [2, 604, 314, 418],
+              [3, 618, 238, 315], [4, 630, 179, 240], [5, 640, 130, 180],
+              [6, 987, 544, 712], [7, 953, 413, 540], [8, 925, 314, 412],
+              [9, 900, 237, 311], [10,880, 180, 234], [11,862, 131, 176]]
 ''' [chute no, x_line, ymin, ymax]'''
 def count_objects_x_axis(top, bottom, right, left, crop_img, roi_position, y_min, y_max, deviation):   
         direction = "n.a." # means not available, it is just initialization

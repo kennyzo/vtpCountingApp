@@ -292,7 +292,14 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         #print(arr_chute_count)
         for c in arr_box_counting:
           print("Insert  " + str(c) + " to databases")
-          ret = vlParcelCollection.insert_one({"chuteno": c[0], "timesorted": datetime.now(), "path_image": c[1]})
+          ret = vlParcelCollection.insert_one({"chuteno":       c[0],
+                                               "timesorted":    datetime.now(),
+                                               "path_image":    c[1],
+                                               "left_coord":    c[2],
+                                               "top_coord" :    c[3],
+                                               "right_coord":   c[4],
+                                               "bottom_coord":  c[5],
+                                               })
           print(ret)
                 # start insert here
         # when the vehicle passed over line and counted, make the color of ROI line green
@@ -307,7 +314,7 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         ********************************************************************************************************
         '''
         for i in range(len(roi_chutes)):
-          cv2.putText(input_frame, str(chutes_count[i]), (roi_chutes[i][0], roi_chutes[i][1]), font, 1.2, (0, 0xFF, 0xFF), 2)
+          cv2.putText(input_frame, str(chutes_count[i]), (roi_chutes[i][0], roi_chutes[i][1]), font, 1, (0, 0xFF, 0xFF), 2)
         #for roi_chute in roi_chutes:
         #  cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2,8)
         #cv2.putText(input_frame,', '.join(map(str, chutes_count)),(50, 125),font,0.6,(0, 0xFF, 0xFF),2,cv2.FONT_HERSHEY_SIMPLEX,)

@@ -217,7 +217,7 @@ def vlDraw_bounding_box_on_image(current_frame_number, image,
   else:
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
   draw.line([(left, top), (left, bottom), (right, bottom),
-             (right, top), (left, top)], width=thickness, fill='red')
+             (right, top), (left, top)], width=thickness, fill='blue')
 
   predicted_direction = "n.a."  # means not available, it is just initialization
 
@@ -1256,7 +1256,7 @@ def vlVisualize_boxes_and_count(current_frame_number,
       cv2.imwrite(path_file, image)
       old_value = arr_parcel_enter_chute[chute_parcel_detected]
       arr_parcel_enter_chute[chute_parcel_detected] = old_value + 1
-      arr_box_counting.append([chute_parcel_detected, path_file])
+      arr_box_counting.append([chute_parcel_detected, path_file, xmin, ymin, xmax, ymax])
 
   if(mode == 1):
     counting_mode = counting_mode.replace("['", " ").replace("']", " ").replace("%", "")

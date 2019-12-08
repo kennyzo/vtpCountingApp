@@ -1,2 +1,0 @@
-# vtpCountingApp
-Jamina-working
