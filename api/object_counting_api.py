@@ -290,18 +290,19 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         old_chutes_count = chutes_count
         #print("arr_chute_count: ")
         #print(arr_chute_count)
+        # start insert here
         for c in arr_box_counting:
+          c[2] = c[2] * 1280
+          c[3] = c[3] * 720
+          c[4] = c[4]* 1280
+          c[5] = c[5]* 720
           print("Insert  " + str(c) + " to databases")
           ret = vlParcelCollection.insert_one({"chuteno":       c[0],
                                                "timesorted":    datetime.now(),
                                                "path_image":    c[1],
-                                               "left_coord":    c[2],
-                                               "top_coord" :    c[3],
-                                               "right_coord":   c[4],
-                                               "bottom_coord":  c[5],
+                                               "coordination": [c[2], c[3], c[4], c[5]]
                                                })
           print(ret)
-                # start insert here
         # when the vehicle passed over line and counted, make the color of ROI line green
         #print("==================> Count in frame: " + str(counter))
 

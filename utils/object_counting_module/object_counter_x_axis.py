@@ -42,12 +42,17 @@ def vlCount_objects_y_axis(top, bottom, right, left, crop_img, roi_position, dev
   y_coordinate = (bottom + top) / 2
   x_coordinate = (left + right) / 2
   #print("Distance of box center and roi line: " + str(distance))
-  if abs(y_coordinate - roi_position) < deviation:
+  if (bottom < roi_position) and (roi_position - bottom) < deviation:
     is_parcel_passed_total_line = True
     image_saver.save_image(crop_img)  # save detected object image
-  for chute in roi_chutes:
-    if abs(x_coordinate - chute[1]) < deviation and bottom > chute[2] and top < chute[3]:
-    #if abs(x_coordinate - chute[1]) < deviation:
-      return is_parcel_passed_total_line,chute[0]
+  for i in range(len(roi_chutes)):
+    if i < 6:
+      if (right < roi_chutes[i][1]) and (roi_chutes[i][1] - right) < deviation and top > roi_chutes[i][2] and bottom < roi_chutes[i][3]:
+        #if abs(x_coordinate - chute[1]) < deviation:
+        return is_parcel_passed_total_line,roi_chutes[i][0]
+    else:
+      if (left > roi_chutes[i][1]) and (left - roi_chutes[i][1]) < deviation and top > roi_chutes[i][2] and bottom < roi_chutes[i][3]:
+        #if abs(x_coordinate - chute[1]) < deviation:
+        return is_parcel_passed_total_line,roi_chutes[i][0]
 
   return is_parcel_passed_total_line, -1
