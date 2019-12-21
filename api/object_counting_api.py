@@ -320,7 +320,7 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         #  cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2,8)
         #cv2.putText(input_frame,', '.join(map(str, chutes_count)),(50, 125),font,0.6,(0, 0xFF, 0xFF),2,cv2.FONT_HERSHEY_SIMPLEX,)
         total_parcel = total_parcel + counter
-        cv2.putText(input_frame, 'Detected Parcels: ' + str(total_parcel), (50, 100), font, 0.8, (0, 0xFF, 0xFF), 2, cv2.FONT_HERSHEY_SIMPLEX)
+        #cv2.putText(input_frame, 'Detected Parcels: ' + str(total_parcel), (50, 100), font, 0.8, (0, 0xFF, 0xFF), 2, cv2.FONT_HERSHEY_SIMPLEX)
         #cv2.putText(input_frame, ', '.join(map(str, chutes_count)), (50, 125), font, 0.6, (0, 0xFF, 0xFF), 2, cv2.FONT_HERSHEY_SIMPLEX,)
         if counter > 0:
           cv2.line(input_frame, (680, roi), (900, roi), (0, 0xFF, 0), 3, 8)
