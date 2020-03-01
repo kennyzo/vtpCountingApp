@@ -20,7 +20,7 @@ MONGO_DB_COLL = "vlChuteMngt"
 
 input_video = "input_images_and_videos/M02-10h20"
 
-is_color_recognition_enabled = 0 
+is_color_recognition_enabled = 0
 
 detection_graph, category_index = backbone.set_model('output-33818', 'parcel.pbtxt')
 
@@ -37,6 +37,7 @@ roi_chutes = [[515, 528, 710], [545, 393, 535], [571, 292, 400],
 #               [399, 268, 340], [420, 216, 271], [436, 175, 218],
 #               [936, 518, 720], [869, 393, 538], [813, 308, 410],
 #               [772, 243, 315], [743, 195, 240], [720, 156, 200]]
+
 # the constant that represents the object counting area
 deviation = 25
 

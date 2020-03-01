@@ -13,7 +13,7 @@ roi_chutes = [[0, 515, 528, 710], [1, 545, 393, 535], [2, 571, 292, 400],
 #               [6, 936, 518, 720], [7, 869, 393, 538], [8, 813, 308, 410],
 #               [9, 772, 243, 315], [10,743, 195, 240], [11,720, 156, 200]]
 ''' [chute no, x_line, ymin, ymax]'''
-def count_objects_x_axis(top, bottom, right, left, crop_img, roi_position, y_min, y_max, deviation):   
+def count_objects_x_axis(top, bottom, right, left, crop_img, roi_position, y_min, y_max, deviation):
         direction = "n.a." # means not available, it is just initialization
         isInROI = True # is the object that is inside Region Of Interest
         update_csv = False
