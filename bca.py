@@ -18,17 +18,25 @@ MONGO_DB_LINK = "mongodb://localhost:27017/"
 MONGO_DB_NAME = "vlparceltracking"
 MONGO_DB_COLL = "vlChuteMngt"
 
-input_video = "input_images_and_videos/M02-20191207-20h59"
+input_video = "input_images_and_videos/M02-10h20"
 
 is_color_recognition_enabled = 0 
 
-detection_graph, category_index = backbone.set_model('output-22754', 'parcel.pbtxt')
+detection_graph, category_index = backbone.set_model('output-33818', 'parcel.pbtxt')
 
-roi_y = 640 # roi line position
+roi_y = 700 # roi line position
 
 # Count lines for couting chutes : [x_start, x_end, y_line]
-roi_chutes = [[562, 550, 719], [586, 416, 552], [604, 314, 418], [618, 238, 315], [630, 179, 240], [640, 130, 180],
-              [987, 544, 712], [953, 413, 540], [925, 314, 412], [900, 237, 311], [880, 180, 234], [862, 131, 176]]
+# M02
+roi_chutes = [[515, 528, 710], [545, 393, 535], [571, 292, 400],
+              [591, 218, 298], [608, 160, 222], [620, 115, 161],
+              [1045, 515, 700], [1007, 389, 530], [970, 292, 397],
+              [939, 218, 299], [911, 160, 222], [888, 115, 164]]
+#M16
+# roi_chutes = [[315, 563, 720], [335, 428, 574], [370, 338, 436],
+#               [399, 268, 340], [420, 216, 271], [436, 175, 218],
+#               [936, 518, 720], [869, 393, 538], [813, 308, 410],
+#               [772, 243, 315], [743, 195, 240], [720, 156, 200]]
 # the constant that represents the object counting area
 deviation = 25
 

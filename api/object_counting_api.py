@@ -221,7 +221,8 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
   fps = int(cap.get(cv2.CAP_PROP_FPS))
 
   fourcc = cv2.VideoWriter_fourcc(*'X264')
-  output_movie = cv2.VideoWriter(input_video + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + '.mp4', fourcc, fps, (width, height))
+  if isWriteVideoOutput:
+    output_movie = cv2.VideoWriter(input_video + strftime("%Y-%m-%d-%H-%M-%S", gmtime()) + '.mp4', fourcc, fps, (width, height))
 
   # Declare variables
   old_chutes_count  =[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -247,7 +248,8 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
       detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
       detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
       num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-
+      # couting frame handle
+      frame_handled_count = 0;
       # for all the frames that are extracted from input video
       while(cap.isOpened()):
         ret, frame = cap.read()
@@ -316,11 +318,11 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         '''
         for i in range(len(roi_chutes)):
           cv2.putText(input_frame, str(chutes_count[i]), (roi_chutes[i][0], roi_chutes[i][1]), font, 1, (0, 0xFF, 0xFF), 2)
-        #for roi_chute in roi_chutes:
-        #  cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2,8)
-        #cv2.putText(input_frame,', '.join(map(str, chutes_count)),(50, 125),font,0.6,(0, 0xFF, 0xFF),2,cv2.FONT_HERSHEY_SIMPLEX,)
+        for roi_chute in roi_chutes:
+          cv2.line(input_frame, (roi_chute[0], roi_chute[1]), (roi_chute[0], roi_chute[2]), (0, 0, 0xFF), 2,8)
+        # cv2.putText(input_frame,', '.join(map(str, chutes_count)),(50, 125),font,0.6,(0, 0xFF, 0xFF),2,cv2.FONT_HERSHEY_SIMPLEX,)
         total_parcel = total_parcel + counter
-        #cv2.putText(input_frame, 'Detected Parcels: ' + str(total_parcel), (50, 100), font, 0.8, (0, 0xFF, 0xFF), 2, cv2.FONT_HERSHEY_SIMPLEX)
+        cv2.putText(input_frame, 'Frame process: ' + str(frame_handled_count), (50, 100), font, 0.8, (0, 0xFF, 0xFF), 2, cv2.FONT_HERSHEY_SIMPLEX)
         #cv2.putText(input_frame, ', '.join(map(str, chutes_count)), (50, 125), font, 0.6, (0, 0xFF, 0xFF), 2, cv2.FONT_HERSHEY_SIMPLEX,)
         if counter > 0:
           cv2.line(input_frame, (680, roi), (900, roi), (0, 0xFF, 0), 3, 8)
@@ -338,6 +340,7 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
         #Write log
         #print(str(chutes_count))
         #print("------ End process frame: " + str(cap.get(1)))
+        frame_handled_count = frame_handled_count + 1
         # Press Q on keyboard to  exit
         if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
