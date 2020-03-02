@@ -18,11 +18,11 @@ MONGO_DB_LINK = "mongodb://localhost:27017/"
 MONGO_DB_NAME = "vlparceltracking"
 MONGO_DB_COLL = "vlChuteMngt"
 
-input_video = "input_images_and_videos/M02-10h20"
+input_video = "input_images_and_videos/M02-20200301-13h57"
 
 is_color_recognition_enabled = 0
 
-detection_graph, category_index = backbone.set_model('output-33818', 'parcel.pbtxt')
+detection_graph, category_index = backbone.set_model('output-77253', 'parcel.pbtxt')
 
 roi_y = 700 # roi line position
 

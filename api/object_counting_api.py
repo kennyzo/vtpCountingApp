@@ -258,7 +258,7 @@ def vlCouting_parcel_passed_line(vlParcelCollection, input_video, detection_grap
             print("End processing...")
             break
 
-        input_frame = frame[100:720, 430 : 1120]
+        input_frame = frame
 
         # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
         image_np_expanded = np.expand_dims(input_frame, axis=0)
